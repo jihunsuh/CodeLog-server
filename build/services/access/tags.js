@@ -1,3 +1,5 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 const { Tags, postings_tags, companies_tags } = require('../../database/models');
 const { handlePromise } = require('../helper');
 module.exports = {

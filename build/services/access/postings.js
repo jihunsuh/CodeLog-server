@@ -1,3 +1,5 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 const { Postings, postings_tags, Tags, Contents, Subtitles, Types, } = require('../../database/models');
 const { handlePromise } = require('../helper');
 const Sequelize = require('sequelize');

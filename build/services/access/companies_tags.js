@@ -1,3 +1,5 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 const { companies_tags, Tags, postings_tags, Postings, Users } = require('../../database/models');
 const { handlePromise } = require('../helper');
 Tags.hasMany(companies_tags, { foreignKey: 'tag_id' });

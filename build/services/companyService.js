@@ -1,18 +1,11 @@
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 const { companies_tags, users, companies, tags } = require('./access');
 const { handleCompanyData, handleTagDatas } = require('./helper');
 const userService = require('./userService');
 const CompanyService = {
-    signin: (company_code, emailOrUsername, password) => __awaiter(void 0, void 0, void 0, function* () {
-        const signinResult = yield userService.signin(emailOrUsername, password);
+    signin: async (company_code, emailOrUsername, password) => {
+        const signinResult = await userService.signin(emailOrUsername, password);
         if (!signinResult.success) {
             return {
                 success: false,
@@ -28,7 +21,7 @@ const CompanyService = {
                 message: "you don't have company",
             };
         }
-        const companyData = yield companies.find(company_id);
+        const companyData = await companies.find(company_id);
         if (companyData.company_code !== company_code) {
             return {
                 success: false,
@@ -41,9 +34,9 @@ const CompanyService = {
             payload: signinResult.payload,
             message: 'found user',
         };
-    }),
-    signup: (companyData) => __awaiter(void 0, void 0, void 0, function* () {
-        const companyCreate = yield companies.create(companyData);
+    },
+    signup: async (companyData) => {
+        const companyCreate = await companies.create(companyData);
         if (!companyCreate) {
             return {
                 success: false,
@@ -66,7 +59,7 @@ const CompanyService = {
         else {
             member.company_id = companyCreate.id || null;
         }
-        const memberCreate = yield userService.signup(member);
+        const memberCreate = await userService.signup(member);
         if (!memberCreate.success) {
             const companyDelete = companies.delete(companyCreate.id);
             if (!companyDelete) {
@@ -87,9 +80,9 @@ const CompanyService = {
             payload: companyCreate,
             message: 'successfully created',
         };
-    }),
-    find: (company_id) => __awaiter(void 0, void 0, void 0, function* () {
-        const companyData = yield companies.find(company_id);
+    },
+    find: async (company_id) => {
+        const companyData = await companies.find(company_id);
         if (!companyData) {
             return {
                 success: false,
@@ -102,9 +95,9 @@ const CompanyService = {
             payload: handleCompanyData(companyData),
             message: 'successfully found',
         };
-    }),
-    update: (companyData) => __awaiter(void 0, void 0, void 0, function* () {
-        const companyRecord = yield companies.find(companyData.id);
+    },
+    update: async (companyData) => {
+        const companyRecord = await companies.find(companyData.id);
         if (!companyRecord) {
             return {
                 success: false,
@@ -122,7 +115,7 @@ const CompanyService = {
                 };
             }
         }
-        const updateRecord = yield companies.update(companyData);
+        const updateRecord = await companies.update(companyData);
         if (!updateRecord) {
             return {
                 success: false,
@@ -130,17 +123,17 @@ const CompanyService = {
                 message: "can't update company",
             };
         }
-        const deleteTags = yield tags.deleteByCompanyId(companyData.id);
+        const deleteTags = await tags.deleteByCompanyId(companyData.id);
         return {
             success: true,
             payload: updateRecord,
             message: 'successfully update company',
         };
-    }),
-    addTags: (company_id, company_tags) => __awaiter(void 0, void 0, void 0, function* () {
+    },
+    addTags: async (company_id, company_tags) => {
         let tagDatas = [];
         for (let tag_name of company_tags) {
-            const findTag = yield tags.findByName(tag_name);
+            const findTag = await tags.findByName(tag_name);
             if (!findTag) {
                 return {
                     success: false,
@@ -153,7 +146,7 @@ const CompanyService = {
                 tag_id: findTag.id,
             });
         }
-        const addTag = yield tags.addCTTags(tagDatas);
+        const addTag = await tags.addCTTags(tagDatas);
         if (!addTag) {
             return {
                 success: false,
@@ -166,12 +159,12 @@ const CompanyService = {
             payload: null,
             message: 'successfully taged',
         };
-    }),
-    findDeveloper: (company_id) => __awaiter(void 0, void 0, void 0, function* () {
-        let userids = yield companies_tags.findDeveloper(company_id);
+    },
+    findDeveloper: async (company_id) => {
+        let userids = await companies_tags.findDeveloper(company_id);
         let userDatas = [];
         for (let id of handleTagDatas(userids)) {
-            const userData = yield users.findById(id[0]);
+            const userData = await users.findById(id[0]);
             userDatas.push(userData);
         }
         return {
@@ -179,6 +172,6 @@ const CompanyService = {
             payload: userDatas,
             message: 'successfully found',
         };
-    }),
+    },
 };
 module.exports = CompanyService;

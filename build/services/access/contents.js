@@ -1,3 +1,5 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 const { Contents, Subtitles } = require('../../database/models');
 const { handlePromise } = require('../helper');
 Subtitles.hasMany(Contents, { foreignKey: 'subtitle_id' });

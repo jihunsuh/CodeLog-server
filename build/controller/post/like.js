@@ -1,25 +1,18 @@
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 const asyncHandler = require('express-async-handler');
 const { userService, postingService } = require('../../services');
 module.exports = {
-    post: asyncHandler((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    post: asyncHandler(async (req, res) => {
         const { id } = req.body;
         const { token } = req.cookies;
-        const userResult = yield userService.findByToken(token);
+        const userResult = await userService.findByToken(token);
         if (!userResult.success) {
             res.status(403).send('login required');
             return;
         }
         const user_id = userResult.payload.id;
-        const findresult = yield postingService.find(id);
+        const findresult = await postingService.find(id);
         if (!findresult.success) {
             res.status(404).send("i can't find your postings");
             return;
@@ -28,23 +21,23 @@ module.exports = {
             res.status(403).send("You can't like yourself");
             return;
         }
-        const likeResult = yield postingService.like(id);
+        const likeResult = await postingService.like(id);
         if (!likeResult.success) {
             res.status(404).send("There's an error while liking");
             return;
         }
         res.status(200).send('successfully liked');
-    })),
-    delete: asyncHandler((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    }),
+    delete: asyncHandler(async (req, res) => {
         const { id } = req.body;
         const { token } = req.cookies;
-        const userResult = yield userService.findByToken(token);
+        const userResult = await userService.findByToken(token);
         if (!userResult.success) {
             res.status(403).send('login required');
             return;
         }
         const user_id = userResult.payload.id;
-        const findresult = yield postingService.find(id);
+        const findresult = await postingService.find(id);
         if (!findresult.success) {
             res.status(404).send("i can't find your postings");
             return;
@@ -53,11 +46,11 @@ module.exports = {
             res.status(403).send("You can't like yourself");
             return;
         }
-        const unlikeResult = yield postingService.unlike(id);
+        const unlikeResult = await postingService.unlike(id);
         if (!unlikeResult.success) {
             res.status(404).send("There's an error while unliking");
             return;
         }
         res.status(200).send('successfully unliked');
-    })),
+    }),
 };

@@ -1,21 +1,14 @@
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 const users = require('./access/users');
 const { isValid } = require('../utils/token');
 const postingService = require('./postingService');
 const UserService = {
-    signin: (emailOrUsername, password) => __awaiter(void 0, void 0, void 0, function* () {
+    signin: async (emailOrUsername, password) => {
         let userData;
-        userData = yield users.findByEmail(emailOrUsername);
+        userData = await users.findByEmail(emailOrUsername);
         if (!userData) {
-            userData = yield users.findByUsername(emailOrUsername);
+            userData = await users.findByUsername(emailOrUsername);
         }
         if (!userData) {
             return {
@@ -36,9 +29,9 @@ const UserService = {
             payload: userData,
             message: 'found user',
         };
-    }),
-    signup: (userData) => __awaiter(void 0, void 0, void 0, function* () {
-        const userCreate = yield users.create(userData);
+    },
+    signup: async (userData) => {
+        const userCreate = await users.create(userData);
         if (userCreate === 'duplicated') {
             return {
                 success: false,
@@ -58,9 +51,9 @@ const UserService = {
             payload: null,
             message: String(userCreate),
         };
-    }),
-    update: (userRecord) => __awaiter(void 0, void 0, void 0, function* () {
-        const updateRecord = yield users.updateByEmail(userRecord);
+    },
+    update: async (userRecord) => {
+        const updateRecord = await users.updateByEmail(userRecord);
         if (!updateRecord) {
             return {
                 success: false,
@@ -73,9 +66,9 @@ const UserService = {
             payload: updateRecord,
             message: 'successfully update user',
         };
-    }),
-    updatebyId: (userRecord) => __awaiter(void 0, void 0, void 0, function* () {
-        const updateRecord = yield users.updateById(userRecord);
+    },
+    updatebyId: async (userRecord) => {
+        const updateRecord = await users.updateById(userRecord);
         if (!updateRecord) {
             return {
                 success: false,
@@ -88,9 +81,9 @@ const UserService = {
             payload: updateRecord,
             message: 'successfully update user',
         };
-    }),
-    findByToken: (token) => __awaiter(void 0, void 0, void 0, function* () {
-        const decode = yield isValid(token);
+    },
+    findByToken: async (token) => {
+        const decode = await isValid(token);
         if (!decode.isValid) {
             return {
                 success: false,
@@ -99,7 +92,7 @@ const UserService = {
             };
         }
         const { email, password } = decode.userData;
-        const userData = yield users.findByEmail(email);
+        const userData = await users.findByEmail(email);
         if (!userData) {
             return {
                 success: false,
@@ -119,9 +112,9 @@ const UserService = {
             payload: userData,
             message: 'id found',
         };
-    }),
-    checkEmail: (email) => __awaiter(void 0, void 0, void 0, function* () {
-        const findRecord = yield users.findByEmail(email);
+    },
+    checkEmail: async (email) => {
+        const findRecord = await users.findByEmail(email);
         if (!findRecord) {
             return {
                 success: true,
@@ -134,9 +127,9 @@ const UserService = {
             payload: null,
             message: 'duplicated',
         };
-    }),
-    delete: (user_id) => __awaiter(void 0, void 0, void 0, function* () {
-        const userPostResult = yield postingService.findByUser(user_id);
+    },
+    delete: async (user_id) => {
+        const userPostResult = await postingService.findByUser(user_id);
         if (!userPostResult.success) {
             return {
                 success: false,
@@ -145,7 +138,7 @@ const UserService = {
             };
         }
         for (let userPost of userPostResult.payload) {
-            const deletePostResult = yield postingService.delete(userPost.id);
+            const deletePostResult = await postingService.delete(userPost.id);
             if (!deletePostResult.success) {
                 return {
                     success: false,
@@ -154,12 +147,12 @@ const UserService = {
                 };
             }
         }
-        const deleteResult = yield users.delete(user_id);
+        const deleteResult = await users.delete(user_id);
         return {
             success: true,
             payload: null,
             message: 'deleted',
         };
-    }),
+    },
 };
 module.exports = UserService;

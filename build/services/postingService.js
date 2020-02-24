@@ -1,17 +1,10 @@
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 const { users, companies, postings, types, subtitles, contents, tags } = require('./access');
 const { handlePostData, handlePostDatas, handleCompanyDatas } = require('./helper');
 const postingService = {
-    create: (postingData) => __awaiter(void 0, void 0, void 0, function* () {
-        const typeData = yield types.findByName(postingData.theme);
+    create: async (postingData) => {
+        const typeData = await types.findByName(postingData.theme);
         if (!typeData) {
             return {
                 success: false,
@@ -20,7 +13,7 @@ const postingService = {
             };
         }
         postingData.type_id = typeData.id;
-        const postCreate = yield postings.create(postingData);
+        const postCreate = await postings.create(postingData);
         if (!postCreate) {
             return {
                 success: false,
@@ -29,13 +22,13 @@ const postingService = {
             };
         }
         const post_id = postCreate.id;
-        const subtDatas = yield subtitles.findByTypeid(typeData.id);
+        const subtDatas = await subtitles.findByTypeid(typeData.id);
         for (let subtitle of subtDatas) {
             const { name, id } = subtitle;
             const content = postingData.content[name];
-            const contentCreate = yield contents.create(post_id, id, content);
+            const contentCreate = await contents.create(post_id, id, content);
             if (!contentCreate) {
-                const postDelete = yield postings.delete(post_id);
+                const postDelete = await postings.delete(post_id);
                 if (!postDelete) {
                     return {
                         success: false,
@@ -55,9 +48,9 @@ const postingService = {
             payload: postCreate,
             message: 'created',
         };
-    }),
-    find: (post_id) => __awaiter(void 0, void 0, void 0, function* () {
-        let postRecord = yield postings.findById(post_id);
+    },
+    find: async (post_id) => {
+        let postRecord = await postings.findById(post_id);
         if (!postRecord) {
             return {
                 success: false,
@@ -66,7 +59,7 @@ const postingService = {
             };
         }
         let postData = handlePostData(postRecord);
-        const userData = yield users.findById(postData.user_id);
+        const userData = await users.findById(postData.user_id);
         if (userData) {
             postData.user = {
                 email: userData.email,
@@ -80,10 +73,10 @@ const postingService = {
             payload: postData,
             message: 'successfully found',
         };
-    }),
-    getHome: () => __awaiter(void 0, void 0, void 0, function* () {
+    },
+    getHome: async () => {
         let data = {};
-        let newPostDatas = yield postings.findByNew(10);
+        let newPostDatas = await postings.findByNew(10);
         if (!newPostDatas) {
             return {
                 success: false,
@@ -92,7 +85,7 @@ const postingService = {
             };
         }
         data.new_post = handlePostDatas(newPostDatas);
-        let ManyLikePostDatas = yield postings.findByManyLike(10);
+        let ManyLikePostDatas = await postings.findByManyLike(10);
         if (!ManyLikePostDatas) {
             return {
                 success: false,
@@ -101,7 +94,7 @@ const postingService = {
             };
         }
         data.recommended_post = handlePostDatas(ManyLikePostDatas);
-        let newCompanies = yield companies.findByNew(10);
+        let newCompanies = await companies.findByNew(10);
         if (!newCompanies) {
             return {
                 success: false,
@@ -115,10 +108,10 @@ const postingService = {
             payload: data,
             message: 'success',
         };
-    }),
-    findBlog: (user_id) => __awaiter(void 0, void 0, void 0, function* () {
+    },
+    findBlog: async (user_id) => {
         let blogPostDatas = {};
-        const typeDatas = yield types.findAll();
+        const typeDatas = await types.findAll();
         if (!typeDatas) {
             return {
                 success: false,
@@ -127,7 +120,7 @@ const postingService = {
             };
         }
         for (let typeData of typeDatas) {
-            let themePostDatas = yield postings.findByUserTheme(user_id, typeData.id);
+            let themePostDatas = await postings.findByUserTheme(user_id, typeData.id);
             if (!themePostDatas) {
                 return {
                     success: false,
@@ -142,9 +135,9 @@ const postingService = {
             payload: blogPostDatas,
             message: 'all posts found',
         };
-    }),
-    findByUser: (user_id) => __awaiter(void 0, void 0, void 0, function* () {
-        let userPostDatas = yield postings.findByUser(user_id);
+    },
+    findByUser: async (user_id) => {
+        let userPostDatas = await postings.findByUser(user_id);
         if (!userPostDatas) {
             return {
                 success: false,
@@ -157,11 +150,11 @@ const postingService = {
             payload: userPostDatas,
             message: 'all posts found',
         };
-    }),
-    addTags: (post_id, selected_tags) => __awaiter(void 0, void 0, void 0, function* () {
+    },
+    addTags: async (post_id, selected_tags) => {
         let tagDatas = [];
         for (let tag_name of selected_tags) {
-            const findTag = yield tags.findByName(tag_name);
+            const findTag = await tags.findByName(tag_name);
             if (!findTag) {
                 return {
                     success: false,
@@ -174,7 +167,7 @@ const postingService = {
                 tag_id: findTag.id,
             });
         }
-        const addTag = yield tags.addPTTags(tagDatas);
+        const addTag = await tags.addPTTags(tagDatas);
         if (!addTag) {
             return {
                 success: false,
@@ -187,9 +180,9 @@ const postingService = {
             payload: null,
             message: 'successfully taged',
         };
-    }),
-    like: (post_id) => __awaiter(void 0, void 0, void 0, function* () {
-        const likeResult = yield postings.increaseLike(post_id);
+    },
+    like: async (post_id) => {
+        const likeResult = await postings.increaseLike(post_id);
         if (!likeResult) {
             return {
                 success: false,
@@ -202,9 +195,9 @@ const postingService = {
             payload: likeResult,
             message: 'post liked',
         };
-    }),
-    unlike: (post_id) => __awaiter(void 0, void 0, void 0, function* () {
-        const unLikeResult = yield postings.decreaseLike(post_id);
+    },
+    unlike: async (post_id) => {
+        const unLikeResult = await postings.decreaseLike(post_id);
         if (!unLikeResult) {
             return {
                 success: false,
@@ -217,10 +210,10 @@ const postingService = {
             payload: unLikeResult,
             message: 'post unliked',
         };
-    }),
-    update: (user_id, postingData) => __awaiter(void 0, void 0, void 0, function* () {
+    },
+    update: async (user_id, postingData) => {
         const { id, title, content } = postingData;
-        const postData = yield postings.findById(id);
+        const postData = await postings.findById(id);
         if (!postData) {
             return {
                 success: false,
@@ -235,7 +228,7 @@ const postingService = {
                 message: 'it is not your post',
             };
         }
-        const contentDatas = yield contents.findByPostId(id);
+        const contentDatas = await contents.findByPostId(id);
         if (!contentDatas) {
             return {
                 success: false,
@@ -246,7 +239,7 @@ const postingService = {
         for (let element of contentDatas) {
             if (element.Subtitle.name in content) {
                 element.body = content[element.Subtitle.name];
-                const updateContents = yield contents.update(element);
+                const updateContents = await contents.update(element);
                 if (!updateContents) {
                     return {
                         success: false,
@@ -256,8 +249,8 @@ const postingService = {
                 }
             }
         }
-        const deleteTags = yield tags.deleteByPostId(id);
-        const updateTitles = yield postings.updateTitleById(id, title);
+        const deleteTags = await tags.deleteByPostId(id);
+        const updateTitles = await postings.updateTitleById(id, title);
         if (!updateTitles) {
             return {
                 success: false,
@@ -270,24 +263,24 @@ const postingService = {
             payload: null,
             message: 'post updated',
         };
-    }),
-    delete: (post_id) => __awaiter(void 0, void 0, void 0, function* () {
-        const deleteTags = yield tags.deleteByPostId(post_id);
-        const deleteContents = yield contents.deleteByPostId(post_id);
-        const deleteResult = yield postings.delete(post_id);
+    },
+    delete: async (post_id) => {
+        const deleteTags = await tags.deleteByPostId(post_id);
+        const deleteContents = await contents.deleteByPostId(post_id);
+        const deleteResult = await postings.delete(post_id);
         return {
             success: true,
             payload: deleteResult,
             message: 'deleted',
         };
-    }),
-    test: (id) => __awaiter(void 0, void 0, void 0, function* () {
-        let contentDatas = yield contents.findByPostId(id);
+    },
+    test: async (id) => {
+        let contentDatas = await contents.findByPostId(id);
         return {
             success: true,
             payload: contentDatas,
             message: 'deleted',
         };
-    }),
+    },
 };
 module.exports = postingService;

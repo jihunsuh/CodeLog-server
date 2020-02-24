@@ -1,0 +1,6 @@
+"use strict";
+module.exports = {
+    userService: require('./userService'),
+    postingService: require('./postingService'),
+    companyService: require('./companyService'),
+};
